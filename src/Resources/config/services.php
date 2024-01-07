@@ -42,6 +42,7 @@ return static function (ContainerConfigurator $container): void {
         ->private()
 
         ->set('open_telemetry.exporter_dsn', ExporterDsn::class)
+            ->abstract()
             ->factory([ExporterDsn::class, 'fromString'])
 
         ->set('open_telemetry.exporter_options', ExporterOptionsInterface::class)

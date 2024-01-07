@@ -10,7 +10,7 @@ final class CacheInstrumentationExtensionLoader extends AbstractInstrumentationE
 {
     public function __construct()
     {
-        parent::__construct('twig');
+        parent::__construct('cache');
     }
 
     protected function assertInstrumentationCanHappen(): void
@@ -21,6 +21,8 @@ final class CacheInstrumentationExtensionLoader extends AbstractInstrumentationE
     {
         foreach ($this->container->findTaggedServiceIds('cache.pool') as $serviceId => $tags) {
             $cachePoolDefinition = $this->container->getDefinition($serviceId);
+
+            var_dump($serviceId);
 
             if ($cachePoolDefinition->isAbstract()) {
                 continue;
@@ -41,7 +43,7 @@ final class CacheInstrumentationExtensionLoader extends AbstractInstrumentationE
             $traceableCachePoolDefinition->setDecoratedService($serviceId);
             $traceableCachePoolDefinition->setArgument('$tracer', $this->getInstrumentationTracerOrDefaultTracer());
 
-            $this->container->setDefinition($serviceId.'.traceable', $traceableCachePoolDefinition);
+            $this->container->setDefinition($serviceId.'.tracer', $traceableCachePoolDefinition);
         }
     }
 
