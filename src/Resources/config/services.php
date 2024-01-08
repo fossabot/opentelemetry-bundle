@@ -1,13 +1,13 @@
 <?php
 
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\Adapter\Cache\Trace\CacheTraceAdapter;
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\Adapter\Cache\Trace\TagAwareCacheTraceAdapter;
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\EventSubscriber\ConsoleMetricEventSubscriber;
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\EventSubscriber\ConsoleTraceEventSubscriber;
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\EventSubscriber\HttpKernelMetricEventSubscriber;
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\EventSubscriber\HttpKernelTraceEventSubscriber;
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\Extension\Twig\Trace\TwigTraceExtension;
-use FriendsOfOpenTelemetry\OpenTelemetryBundle\Middleware\Doctrine\Trace\Middleware as DoctrineTraceMiddleware;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Doctrine\Middleware\TraceableMiddleware as TraceableDoctrineMiddleware;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Symfony\Adapter\Cache\TagAwareTraceableCacheAdapter;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Symfony\Adapter\Cache\TraceableCacheAdapter;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Symfony\EventSubscriber\Console\ConsoleMetricEventSubscriber;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Symfony\EventSubscriber\Console\TraceableConsoleEventSubscriber;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Symfony\EventSubscriber\HttpKernel\HttpKernelMetricEventSubscriber;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Symfony\EventSubscriber\HttpKernel\TraceableHttpKernelEventSubscriber;
+use FriendsOfOpenTelemetry\OpenTelemetryBundle\Instrumentation\Twig\TraceableTwigExtension;
 use FriendsOfOpenTelemetry\OpenTelemetryBundle\OpenTelemetry\Context\Propagator\HeadersPropagator;
 use FriendsOfOpenTelemetry\OpenTelemetryBundle\OpenTelemetry\Exporter\ExporterDsn;
 use FriendsOfOpenTelemetry\OpenTelemetryBundle\OpenTelemetry\Exporter\ExporterOptionsInterface;
@@ -53,23 +53,23 @@ return static function (ContainerConfigurator $container): void {
         ->set('open_telemetry.text_map_propagators.noop', NoopTextMapPropagator::class)
         ->set('open_telemetry.propagation_getters.headers', HeadersPropagator::class)
 
-        ->set('open_telemetry.instrumentation.http_kernel.trace.event_subscriber', HttpKernelTraceEventSubscriber::class)
+        ->set('open_telemetry.instrumentation.http_kernel.trace.event_subscriber', TraceableHttpKernelEventSubscriber::class)
             ->arg('$propagator', service('open_telemetry.text_map_propagators.noop'))
             ->arg('$propagationGetter', service('open_telemetry.propagation_getters.headers'))
             ->arg('$requestHeaders', param('open_telemetry.instrumentation.http_kernel.request_headers'))
             ->arg('$responseHeaders', param('open_telemetry.instrumentation.http_kernel.response_headers'))
         ->set('open_telemetry.instrumentation.http_kernel.metric.event_subscriber', HttpKernelMetricEventSubscriber::class)
 
-        ->set('open_telemetry.instrumentation.console.trace.event_subscriber', ConsoleTraceEventSubscriber::class)
+        ->set('open_telemetry.instrumentation.console.trace.event_subscriber', TraceableConsoleEventSubscriber::class)
         ->set('open_telemetry.instrumentation.console.metric.event_subscriber', ConsoleMetricEventSubscriber::class)
 
-        ->set('open_telemetry.instrumentation.doctrine.trace.middleware', DoctrineTraceMiddleware::class)
+        ->set('open_telemetry.instrumentation.doctrine.trace.middleware', TraceableDoctrineMiddleware::class)
 
-        ->set('open_telemetry.instrumentation.twig.trace.extension', TwigTraceExtension::class)
+        ->set('open_telemetry.instrumentation.twig.trace.extension', TraceableTwigExtension::class)
 
-        ->set('open_telemetry.instrumentation.cache.trace.adapter', CacheTraceAdapter::class)
+        ->set('open_telemetry.instrumentation.cache.trace.adapter', TraceableCacheAdapter::class)
             ->abstract()
-        ->set('open_telemetry.instrumentation.cache.trace.tag_aware_adapter', TagAwareCacheTraceAdapter::class)
+        ->set('open_telemetry.instrumentation.cache.trace.tag_aware_adapter', TagAwareTraceableCacheAdapter::class)
             ->abstract()
 
         ->set('open_telemetry.traces.samplers.always_on', AlwaysOnSampler::class)->public()

@@ -32,6 +32,7 @@ abstract class AbstractInstrumentationExtensionLoader implements ExtensionLoader
         var_dump($this->key);
         if (false === $this->isConfigInstrumentationSectionEnabled()) {
             var_dump('not enabled');
+
             return;
         }
 

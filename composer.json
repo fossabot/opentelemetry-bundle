@@ -63,6 +63,7 @@
         "guzzlehttp/promises": "^2.0",
         "matthiasnoback/symfony-config-test": "^5.1",
         "matthiasnoback/symfony-dependency-injection-test": "^5.0",
+        "nyholm/symfony-bundle-test": "^3.0",
         "open-telemetry/exporter-otlp": "^1.0",
         "open-telemetry/exporter-zipkin": "^1.0",
         "open-telemetry/opentelemetry-logger-monolog": "^1.0",
